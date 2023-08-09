@@ -1,0 +1,192 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk2Send</title>
+
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous"
+  />
+
+  <script
+    type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/emailjs-com/dist/email.min.js"
+  ></script>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous"
+  />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .app-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #2d32af;
+      margin-bottom: 30px;
+    }
+
+    .nice-button {
+      background-color: #5649b6; 
+      border: none; 
+      color: white; /* White text */
+      padding: 30px; 
+      text-align: center;
+      text-decoration: none; 
+      display: inline-block; 
+      font-size: 24px; /* Big font size */
+      font-weight: bold; 
+      cursor: pointer; 
+      border-radius: 15px; 
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
+      transition: background-color 0.3s; 
+    }
+
+    /* Hover effect */
+    .nice-button:hover {
+      background-color: #45a049; /* Darker green on hover */
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 40px;
+      margin-top: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .form-control {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .btn-primary {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 15px 30px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <center>
+      <h1 class="app-title">Talk2Send</h1>
+      <hr>
+      <button class="nice-button" id="start">Speak</button>
+      <hr>
+    </center>
+
+    <h2>Send an Email</h2>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Enter name"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="subject">Subject</label>
+      <input
+        type="text"
+        class="form-control"
+        id="subject"
+        placeholder="Enter subject"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea class="form-control" id="message" rows="3" placeholder="Enter your message"></textarea>
+    </div>
+
+    <button class="btn btn-primary" id="submit">Submit</button>
+  </div>
+  <br>
+
+  <script type="text/javascript">
+   (function () {
+    emailjs.init("k9bDppGsW26_GcQa4"); // Replace with your actual EmailJS user ID
+  })();
+
+  var resultElement = document.getElementById('name');
+  var resultElement1 = document.getElementById('subject');
+  var resultElement2 = document.getElementById('message');
+  var recognition = new webkitSpeechRecognition();
+  recognition.lang = window.navigator.language;
+  recognition.interimResults = true;
+
+  recognition.addEventListener('result', (event) => {
+    const result = event.results[event.results.length - 1][0].transcript.toLowerCase();
+    console.log("Result: ", result); // Log the recognized result for debugging
+
+    if (result.includes("name")) {
+      resultElement.value = result.replace("name", "").trim();
+    } else if (result.includes("subject")) {
+      resultElement1.value = result.replace("subject", "").trim();
+    }  else if (result.includes("message")) {
+      resultElement2.value = result.replace("message", "").trim();
+    } else if (result.includes("submit")) {
+      sendMail();
+    }
+  });
+
+  // Start continuous speech recognition when the page loads
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('start').addEventListener('click', () => recognition.start());
+  });
+
+    function sendMail() {
+      var params = {
+        name: document.getElementById("name").value,
+        subject: document.getElementById("subject").value,
+        message: document.getElementById("message").value,
+      };
+
+      const serviceID = "service_a92pbn9";
+      const templateID = "template_q6yii42";
+
+      emailjs.send(serviceID, templateID, params)
+        .then((res) => {
+          document.getElementById("name").value = "";
+          document.getElementById("subject").value = "";
+          document.getElementById("message").value = "";
+          console.log(res);
+          alert("Your message sent successfully!!");
+        })
+        .catch((err) => console.log(err));
+    }
+  </script>
+</body>
+</html>
